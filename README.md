@@ -25,6 +25,11 @@ evidence/            Screenshots and outputs for each stage (01 to 07)
 reports/             Final project report (PDF)
 ```
 
+## Prerequisites
+
+- Docker Desktop installed and running
+- Python 3
+
 ## Getting Started
 
 1. Start the environment:
@@ -42,7 +47,9 @@ reports/             Final project report (PDF)
    python detect_threats.py
    python verify_alerts.py
 ```
-4. Open the dashboard at http://localhost:5601
+4. Open http://localhost:5601 in your browser (only works on the machine running Docker).
+5. Go to Stack Management, then Index Patterns, and create two index patterns: `access-logs` and `alerts`. When asked for a time field, choose the timestamp field.
+6. Build your visualizations in Dashboards. See `evidence/06_dashboard/` for screenshots of the finished dashboard to use as a reference.
 
 ## Testing
 
