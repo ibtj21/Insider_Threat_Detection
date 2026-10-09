@@ -62,4 +62,4 @@ reports/             Final project report (PDF)
 
 ## Authors
 
-Group 2 Students of DSA3040UA - Summer,2026
+Group 2 Students of DSA3040UA - Summer,2026 , USIU-Africa 
