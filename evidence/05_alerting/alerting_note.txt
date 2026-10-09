@@ -1,0 +1,10 @@
+ALERTING — IMPLEMENTATION NOTE
+
+Alerting was implemented as part of the same detection script (detect_threats.py) 
+rather than a separate step, since detection and alert-generation are tightly 
+coupled: each time a rule fires, an alert record is immediately created and 
+indexed into a dedicated 'alerts' index in OpenSearch (separate from the raw 
+access-logs index), containing employee_id, event_id, timestamp, reasons, and 
+severity. This ensures every detection immediately produces a persisted, 
+queryable alert - see evidence in 04_detection/ and the sample alert records 
+in this folder.

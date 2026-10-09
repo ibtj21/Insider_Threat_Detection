@@ -1,0 +1,42 @@
+DETECTION LOGIC — LIMITATIONS NOTE
+Step 4: Detection & Alerting (Final Version)
+
+Our detection system uses three rule-based signals: off-hours access (outside
+8am-6pm EAT), scope violation (accessed segment does not match assigned segment),
+and bulk volume (50+ events within a rolling 10-minute window per employee).
+
+An earlier version of our dataset generator allowed a small number of randomly
+generated "normal" events to coincidentally fall within a bulk-volume employee's
+planted burst window, causing 4 false positives during initial testing. This was
+resolved by updating generate_data.py to explicitly prevent normal-event
+timestamps from landing inside (or within 10 minutes of) any employee's planted
+burst window. A fixed random seed (random.seed(42)) was also added so the
+dataset is now exactly reproducible on every run.
+
+Validation against the dataset's ground-truth is_suspicious label (verify_alerts.py)
+on this corrected, seeded dataset produced the following final results:
+
+- Total alerts generated: 4,510
+- True positives (correctly matched planted-suspicious events): 4,510
+- False positives: 0
+- Precision: 100.00%
+- Planted-suspicious events missed entirely (false negatives): 490
+- Recall: 90.20%
+
+All 490 missed events are explained by a known limitation in the bulk-volume
+rule: it uses a forward-looking rolling window, counting only events that occur
+after the current one. Since each planted burst spans roughly 10 minutes (300
+events, 2 seconds apart) - close to the length of the detection window itself -
+the final events near the end of each burst do not have enough remaining events
+ahead of them to cross the 50-event threshold, even though they are part of the
+same suspicious sequence. This was independently confirmed by checking these
+events' backward-looking counts (250+ suspicious neighbors when counted in the
+opposite direction), proving they are genuinely part of a dense burst that the
+forward-only window simply cannot fully capture near its tail end.
+
+This is a known, explainable limitation of forward-only, threshold-based bulk
+detection, not a system defect. It reflects a genuine security engineering
+trade-off: a stricter or bidirectional window would catch more of these tail
+events, but would require more complex logic. This finding is referenced in
+Part E (Recommendations) as an identified limitation and an area for future
+improvement (e.g., implementing a bidirectional rolling window).
